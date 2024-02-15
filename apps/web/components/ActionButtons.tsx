@@ -1,12 +1,13 @@
 import { useCallback, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import {
-  ArchiveBoxArrowDownIcon,
-  ArrowTopRightOnSquareIcon,
-  ChatBubbleBottomCenterIcon,
+  ArchiveIcon,
+  Trash2Icon,
+  ExternalLinkIcon,
+  OrbitIcon,
+  ReplyIcon,
   SparklesIcon,
-} from "@heroicons/react/24/outline";
-import { DeleteIcon, OrbitIcon } from "lucide-react";
+} from "lucide-react";
 import { ButtonGroup } from "@/components/ButtonGroup";
 import { LoadingMiniSpinner } from "@/components/Loading";
 import { getGmailUrl } from "@/utils/url";
@@ -16,7 +17,6 @@ export function ActionButtons(props: {
   threadId: string;
   isPlanning: boolean;
   isCategorizing: boolean;
-  isArchiving: boolean;
   onPlanAiAction: () => void;
   onAiCategorize: () => void;
   onReply: () => void;
@@ -34,7 +34,6 @@ export function ActionButtons(props: {
     onReply,
     isCategorizing,
     isPlanning,
-    isArchiving,
     refetch,
   } = props;
 
@@ -61,7 +60,7 @@ export function ActionButtons(props: {
         tooltip: "Open in Gmail",
         onClick: openInGmail,
         icon: (
-          <ArrowTopRightOnSquareIcon
+          <ExternalLinkIcon
             className="h-5 w-5 text-gray-700"
             aria-hidden="true"
           />
@@ -71,10 +70,7 @@ export function ActionButtons(props: {
         tooltip: "Reply",
         onClick: onReply,
         icon: (
-          <ChatBubbleBottomCenterIcon
-            className="h-5 w-5 text-gray-700"
-            aria-hidden="true"
-          />
+          <ReplyIcon className="h-5 w-5 text-gray-700" aria-hidden="true" />
         ),
       },
       {
@@ -103,20 +99,15 @@ export function ActionButtons(props: {
         icon: isTrashing ? (
           <LoadingMiniSpinner />
         ) : (
-          <DeleteIcon className="h-5 w-5 text-gray-700" aria-hidden="true" />
+          <Trash2Icon className="h-5 w-5 text-gray-700" aria-hidden="true" />
         ),
       },
 
       {
         tooltip: "Archive",
         onClick: onArchive,
-        icon: isArchiving ? (
-          <LoadingMiniSpinner />
-        ) : (
-          <ArchiveBoxArrowDownIcon
-            className="h-5 w-5 text-gray-700"
-            aria-hidden="true"
-          />
+        icon: (
+          <ArchiveIcon className="h-5 w-5 text-gray-700" aria-hidden="true" />
         ),
       },
     ],
@@ -124,7 +115,6 @@ export function ActionButtons(props: {
       onTrash,
       isTrashing,
       onArchive,
-      isArchiving,
       onPlanAiAction,
       isPlanning,
       onAiCategorize,

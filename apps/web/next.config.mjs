@@ -1,6 +1,8 @@
 import { withSentryConfig } from "@sentry/nextjs";
-import { withContentlayer } from "next-contentlayer";
 import { env } from "./env.mjs";
+import nextMdx from "@next/mdx";
+
+const withMDX = nextMdx();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -9,11 +11,20 @@ const nextConfig = {
   experimental: {
     instrumentationHook: true,
   },
+  pageExtensions: ["js", "jsx", "mdx", "ts", "tsx"],
   images: {
     remotePatterns: [
       {
         protocol: "https",
         hostname: "pbs.twimg.com",
+      },
+      {
+        protocol: "https",
+        hostname: "ph-avatars.imgix.net",
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
       },
     ],
   },
@@ -25,8 +36,8 @@ const nextConfig = {
         permanent: true,
       },
       {
-        source: "/roadmap",
-        destination: "https://inboxzero.canny.io/",
+        source: '/feedback',
+        destination: 'https://inboxzero.canny.io/feature-requests',
         permanent: true,
       },
       {
@@ -42,6 +53,16 @@ const nextConfig = {
       {
         source: "/discord",
         destination: "https://discord.gg/UnBwsydrug",
+        permanent: true,
+      },
+      {
+        source: "/linkedin",
+        destination: "https://www.linkedin.com/company/inbox-zero-ai/",
+        permanent: true,
+      },
+      {
+        source: "/instagram",
+        destination: "https://www.instagram.com/inboxzero_ai/",
         permanent: true,
       },
       {
@@ -61,6 +82,19 @@ const nextConfig = {
       {
         source: "/ingest/:path*",
         destination: "https://app.posthog.com/:path*",
+      },
+    ];
+  },
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "X-Frame-Options",
+            value: "DENY",
+          },
+        ],
       },
     ];
   },
@@ -102,13 +136,11 @@ const sentryConfig = {
   automaticVercelMonitors: true,
 };
 
+const mdxConfig = withMDX(nextConfig);
+
 const exportConfig =
   env.NEXT_PUBLIC_SENTRY_DSN && env.SENTRY_ORGANIZATION && env.SENTRY_PROJECT
-    ? withSentryConfig(
-        withContentlayer(nextConfig),
-        sentryOptions,
-        sentryConfig,
-      )
-    : withContentlayer(nextConfig);
+    ? withSentryConfig(mdxConfig, sentryOptions, sentryConfig)
+    : mdxConfig;
 
 export default exportConfig;

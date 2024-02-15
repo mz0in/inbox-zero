@@ -1,11 +1,14 @@
 import { Metadata } from "next";
 import { Suspense } from "react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/react";
+import { GoogleTagManager } from "@next/third-parties/google";
 import { PostHogPageview, PostHogProvider } from "@/providers/PostHogProvider";
 import "../styles/globals.css";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import { env } from "@/env.mjs";
-import { LemonScript } from "@/utils/scripts/lemon";
+import Providers from "@/app/(app)/providers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,9 +23,9 @@ const calFont = localFont({
   display: "swap",
 });
 
-const title = "Inbox Zero";
+const title = "Inbox Zero | Clean your inbox in minutes";
 const description =
-  "The quickest way to inbox zero. Inbox Zero is your virtual assistant for emails.";
+  "Inbox Zero is the quickest way to reach inbox zero, with our newsletter cleaner, AI automation, cold email blocker, and email analytics.";
 
 export const metadata: Metadata = {
   title,
@@ -30,14 +33,21 @@ export const metadata: Metadata = {
   openGraph: {
     title,
     description,
+    siteName: "Inbox Zero",
+    type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title,
     description,
-    creator: "@getinboxzero",
+    creator: "@inboxzero_ai",
   },
   metadataBase: new URL(env.NEXT_PUBLIC_BASE_URL),
+  // issues with robots.txt: https://github.com/vercel/next.js/issues/58615#issuecomment-1852457285
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export const viewport = {
@@ -58,10 +68,14 @@ export default function RootLayout({
           <Suspense>
             <PostHogPageview />
           </Suspense>
-          {children}
+          <Providers>{children}</Providers>
         </PostHogProvider>
+        <SpeedInsights />
+        <Analytics />
+        {env.NEXT_PUBLIC_GTM_ID ? (
+          <GoogleTagManager gtmId={env.NEXT_PUBLIC_GTM_ID} />
+        ) : null}
       </body>
-      <LemonScript />
     </html>
   );
 }

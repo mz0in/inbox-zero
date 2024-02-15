@@ -1,9 +1,11 @@
+[![](apps/web/app/opengraph-image.png)](https://www.getinboxzero.com)
+
 <p align="center">
   <a href="https://www.getinboxzero.com">
     <h1 align="center">Inbox Zero</h1>
   </a>
   <p align="center">
-    Open source email management tools to reach inbox zero fast.
+    Open source email app to reach inbox zero fast.
     <br />
     <a href="https://www.getinboxzero.com">Website</a>
     ·
@@ -11,13 +13,13 @@
     ·
     <a href="https://github.com/elie222/inbox-zero">Issues</a>
     ·
-    <a href="https://www.getinboxzero.com/roadmap">Roadmap</a>
+    <a href="https://github.com/users/elie222/projects/1">Kanban</a>
   </p>
 </p>
 
 ## About
 
-Inbox Zero is a powerful open-source tool designed for Gmail and Gsuite users. It streamlines your email management, helping you achieve 'Inbox Zero' swiftly with features like email analytics, newsletter management, and AI assistance. Enhance your email experience without replacing your client!
+Inbox Zero is an open-source email app whose goal is to help you reach inbox zero fast with AI assistance.
 
 ## Demo Video
 
@@ -25,13 +27,13 @@ Inbox Zero is a powerful open-source tool designed for Gmail and Gsuite users. I
 
 ## Key Features
 
+- **Newsletter Cleaner:** Easily manage and unsubscribe from newsletters.
+- **AI Assistant:** Auto respond, archive, label, and forward emails based on plain text prompt rules.
+- **Cold Email Blocker:** Automatically block cold emails.
 - **Email Analytics:** Track your email activity with daily, weekly, and monthly stats.
-- **Newsletter Management:** Easily manage and unsubscribe from newsletters.
 - **New Senders:** Identify and block new spam senders.
 - **Unreplied Emails:** Keep track of emails awaiting responses.
 - **Large Email Finder:** Free up space by locating and deleting large emails.
-- **AI Auto-Responder:** Automate responses for common queries.
-- **AI Email Assistant:** Auto-archive, label, and forward emails based on set rules.
 
 ## Built with
 
@@ -43,17 +45,25 @@ Inbox Zero is a powerful open-source tool designed for Gmail and Gsuite users. I
 - [Upstash](https://upstash.com/)
 - [Turbo](https://turbo.build/)
 
-## Roadmap
+## Feature Requests
 
-Explore our upcoming features and improvements on our [Roadmap](https://www.getinboxzero.com/roadmap). Your feedback and [feature requests](https://www.getinboxzero.com/feature-requests) are always welcome!
+To request a feature open a [GitHub issue](https://github.com/elie222/inbox-zero/issues). If you don't have a GitHub account you can request features [here](https://www.getinboxzero.com/feature-requests). Or join our [Discord](https://www.getinboxzero.com/discord).
 
 ## Getting Started for Developers
+
+### Contributing to the project
+
+We have a public Kanban available [here](https://github.com/users/elie222/projects/1/views/1). Join our [Discord](https://www.getinboxzero.com/discord) to discuss tasks and check what's being worked on.
 
 ### Requirements
 
 - [Node.js](https://nodejs.org/en/) >= 18.0.0
 - [pnpm](https://pnpm.io/) >= 8.6.12
-- [Docker desktop](https://www.docker.com/products/docker-desktop/)
+- [Docker desktop](https://www.docker.com/products/docker-desktop/) (optional)
+
+### Setup
+
+[Here's a video](https://youtu.be/hVQENQ4WT2Y) on how to set up the project. It covers the same steps mentioned in this document. But goes into greater detail on setting up the external services.
 
 The external services that are required are:
 
@@ -87,7 +97,9 @@ The required environment variables:
 - `GOOGLE_CLIENT_ID` -- Google OAuth client ID. More info [here](https://next-auth.js.org/providers/google)
 - `GOOGLE_CLIENT_SECRET` -- Google OAuth client secret. More info [here](https://next-auth.js.org/providers/google)
 - `TINYBIRD_TOKEN` -- Admin token for your Tinybird workspace (be sure to create an instance in the GCP `us-east4` region. This can also be changed via your `.env` if you prefer a different region).
-- `OPENAI_API_KEY` -- Standard OpenAI API key.
+- `OPENAI_API_KEY` -- OpenAI API key.
+- `UPSTASH_REDIS_URL` -- Redis URL from Upstash.
+- `UPSTASH_REDIS_TOKEN` -- Redis token from Upstash.
 
 To run the migrations:
 
@@ -95,7 +107,7 @@ To run the migrations:
 pnpm prisma migrate dev
 ```
 
-Now run:
+To run the app locally:
 
 ```bash
 pnpm run dev
@@ -110,9 +122,23 @@ turbo dev
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 To upgrade yourself to admin visit: [http://localhost:3000/admin](http://localhost:3000/admin).
 
+### Setting up Google OAuth and Gmail API
+
+You need to enable these scopes in the Google Cloud Console:
+
+```plaintext
+https://www.googleapis.com/auth/userinfo.profile
+https://www.googleapis.com/auth/userinfo.email
+https://www.googleapis.com/auth/gmail.modify
+https://www.googleapis.com/auth/gmail.settings.basic
+https://www.googleapis.com/auth/contacts
+```
+
 ### Setting up Tinybird
 
 Follow the instructions [here](./packages/tinybird/README.md) to setup the `pipes` and `datasources`.
+
+Optional: If you want to store AI usage stats in Tinybird too, then do the same in `/packages/tinybird-ai-analytics`.
 
 ### Set up push notifications via Google PubSub to handle emails in real time
 

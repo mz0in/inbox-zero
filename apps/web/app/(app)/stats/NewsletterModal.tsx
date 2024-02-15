@@ -143,7 +143,7 @@ function Emails(props: { fromEmail: string; refreshInterval?: number }) {
   const [tab, setTab] = useState<"unarchived" | "all">("unarchived");
   const url = `/api/google/threads?&fromEmail=${encodeURIComponent(
     props.fromEmail,
-  )}${tab === "all" ? "&includeAll=true" : ""}`;
+  )}${tab === "all" ? "&type=all" : ""}`;
   const { data, isLoading, error, mutate } = useSWR<ThreadsResponse>(url, {
     refreshInterval: props.refreshInterval,
   });
@@ -173,7 +173,7 @@ function Emails(props: { fromEmail: string; refreshInterval?: number }) {
                 />
               }
               hideActionBarWhenEmpty
-              refetch={mutate}
+              refetch={() => mutate()}
             />
           )}
         </LoadingContent>

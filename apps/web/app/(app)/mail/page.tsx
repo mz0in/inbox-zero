@@ -1,24 +1,57 @@
 "use client";
 
+import { useCallback } from "react";
 import useSWR from "swr";
 import { useLocalStorage } from "usehooks-ts";
 import { List } from "@/components/email-list/EmailList";
 import { LoadingContent } from "@/components/LoadingContent";
-import { ThreadsResponse } from "@/app/api/google/threads/route";
 import { Banner } from "@/components/Banner";
-// import { Filters, getFilterFunction } from "@/utils/filters";
-// import { usePromptContext } from "@/providers/PromptProvider";
+import {
+  type ThreadsQuery,
+  type ThreadsResponse,
+} from "@/app/api/google/threads/route";
 
-export default function Mail() {
+export default function Mail({
+  searchParams,
+}: {
+  searchParams: { type?: string };
+}) {
+  const query: ThreadsQuery = searchParams.type
+    ? { type: searchParams.type }
+    : {};
+
   const { data, isLoading, error, mutate } = useSWR<ThreadsResponse>(
-    "/api/google/threads",
+    `/api/google/threads?${new URLSearchParams(query as any).toString()}`,
     {
       keepPreviousData: true,
       dedupingInterval: 1_000,
     },
   );
 
-  // const { prompt, filterFunction } = usePromptContext();
+  const refetch = useCallback(
+    (removedThreadIds?: string[]) => {
+      mutate(undefined, {
+        rollbackOnError: true,
+        optimisticData: (currentData) => {
+          if (!removedThreadIds) return { threads: currentData?.threads || [] };
+          const threads =
+            currentData?.threads.filter(
+              (t) => !removedThreadIds.includes(t.id),
+            ) || [];
+          return { threads };
+        },
+        populateCache: (_, currentData) => {
+          if (!removedThreadIds) return { threads: currentData?.threads || [] };
+          const threads =
+            currentData?.threads.filter(
+              (t) => !removedThreadIds.includes(t.id),
+            ) || [];
+          return { threads };
+        },
+      });
+    },
+    [mutate],
+  );
 
   const [bannerVisible, setBannerVisible] = useLocalStorage<
     boolean | undefined
@@ -36,17 +69,9 @@ export default function Mail() {
       <LoadingContent loading={isLoading} error={error}>
         {data && (
           <List
-            emails={data?.threads || []}
-            // prompt={prompt}
-            // filter={
-            //   filterFunction
-            //     ? getFilterFunction(filterFunction.name as Filters)
-            //     : undefined
-            // }
-            // filterArgs={
-            //   filterFunction ? { label: filterFunction.args.label } : undefined
-            // }
-            refetch={mutate}
+            emails={data.threads}
+            refetch={refetch}
+            type={searchParams.type}
           />
         )}
       </LoadingContent>

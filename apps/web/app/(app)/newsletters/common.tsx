@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import clsx from "clsx";
 import { Title, Text } from "@tremor/react";
 import {
@@ -14,6 +14,7 @@ import {
   SquareSlashIcon,
   UserRoundMinusIcon,
 } from "lucide-react";
+import { usePostHog } from "posthog-js/react";
 import { Button } from "@/components/ui/button";
 import { Tooltip } from "@/components/Tooltip";
 import { onAutoArchive, onDeleteFilter } from "@/utils/actions-client";
@@ -97,6 +98,17 @@ export function ActionCell<T extends Row>(props: {
   const [autoArchiveLoading, setAutoArchiveLoading] = React.useState(false);
   const [approveLoading, setApproveLoading] = React.useState(false);
 
+  const posthog = usePostHog();
+
+  const userGmailLabels = useMemo(
+    () =>
+      gmailLabels?.filter(
+        (l) =>
+          l.id && l.type === "user" && l.labelListVisibility === "labelShow",
+      ),
+    [gmailLabels],
+  );
+
   return (
     <>
       <PremiumTooltip showTooltip={!hasUnsubscribeAccess}>
@@ -128,6 +140,8 @@ export function ActionCell<T extends Row>(props: {
               await mutate();
               await decrementUnsubscribeCredit();
               await refetchPremium();
+
+              posthog.capture("Clicked Unsubscribe");
 
               setUnsubscribeLoading(false);
             }}
@@ -181,6 +195,8 @@ export function ActionCell<T extends Row>(props: {
               await mutate();
               await decrementUnsubscribeCredit();
               await refetchPremium();
+
+              posthog.capture("Clicked Auto Archive");
 
               setAutoArchiveLoading(false);
             }}
@@ -236,6 +252,8 @@ export function ActionCell<T extends Row>(props: {
                       });
                       await mutate();
 
+                      posthog.capture("Clicked Disable Auto Archive");
+
                       setAutoArchiveLoading(false);
                     }}
                   >
@@ -248,36 +266,37 @@ export function ActionCell<T extends Row>(props: {
 
               <DropdownMenuLabel>Auto Archive and Label</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              {gmailLabels
-                ?.filter(
-                  (l) =>
-                    l.id &&
-                    l.type === "user" &&
-                    l.labelListVisibility === "labelShow",
-                )
-                .map((label) => {
-                  return (
-                    <DropdownMenuItem
-                      key={label.id}
-                      onClick={async () => {
-                        setAutoArchiveLoading(true);
+              {userGmailLabels?.map((label) => {
+                return (
+                  <DropdownMenuItem
+                    key={label.id}
+                    onClick={async () => {
+                      setAutoArchiveLoading(true);
 
-                        onAutoArchive(item.name, label.id || undefined);
-                        await setNewsletterStatus({
-                          newsletterEmail: item.name,
-                          status: NewsletterStatus.AUTO_ARCHIVED,
-                        });
-                        await mutate();
-                        await decrementUnsubscribeCredit();
-                        await refetchPremium();
+                      onAutoArchive(item.name, label.id || undefined);
+                      await setNewsletterStatus({
+                        newsletterEmail: item.name,
+                        status: NewsletterStatus.AUTO_ARCHIVED,
+                      });
+                      await mutate();
+                      await decrementUnsubscribeCredit();
+                      await refetchPremium();
 
-                        setAutoArchiveLoading(false);
-                      }}
-                    >
-                      {label.name}
-                    </DropdownMenuItem>
-                  );
-                })}
+                      posthog.capture("Clicked Auto Archive and Label");
+
+                      setAutoArchiveLoading(false);
+                    }}
+                  >
+                    {label.name}
+                  </DropdownMenuItem>
+                );
+              })}
+              {!userGmailLabels?.length && (
+                <DropdownMenuItem>
+                  You do not have any labels. Create one in Gmail first to auto
+                  label emails.
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -306,6 +325,8 @@ export function ActionCell<T extends Row>(props: {
             });
             await mutate();
 
+            posthog.capture("Clicked Approve Sender");
+
             setApproveLoading(false);
           }}
           disabled={!hasUnsubscribeAccess}
@@ -325,7 +346,10 @@ export function ActionCell<T extends Row>(props: {
       <Button
         size="sm"
         variant="secondary"
-        onClick={() => setOpenedNewsletter(item)}
+        onClick={() => {
+          setOpenedNewsletter(item);
+          posthog.capture("Clicked Expand Sender");
+        }}
       >
         <ExpandIcon className="h-4 w-4" />
       </Button>

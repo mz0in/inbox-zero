@@ -1,5 +1,5 @@
 import "server-only";
-import { gmail_v1 } from "googleapis";
+import { type gmail_v1 } from "googleapis";
 import prisma from "@/utils/prisma";
 import {
   InboxZeroLabelKey,
@@ -17,12 +17,19 @@ export const inboxZeroLabels: Record<InboxZeroLabelKey, string> = {
   archived: "IZ Archived",
   labeled: "IZ Labeled",
   acted: "IZ Acted",
+  cold_email: "Cold Email",
   // drafted: "Response Drafted by IZ",
   // suggested_label: "Label Suggested by IZ",
 };
 
 export const INBOX_LABEL_ID = "INBOX";
 export const SENT_LABEL_ID = "SENT";
+export const UNREAD_LABEL_ID = "UNREAD";
+export const STARRED_LABEL_ID = "STARRED";
+export const IMPORTANT_LABEL_ID = "IMPORTANT";
+export const SPAM_LABEL_ID = "SPAM";
+export const TRASH_LABEL_ID = "TRASH";
+export const DRAFT_LABEL_ID = "DRAFT";
 
 export async function getGmailLabels(gmail: gmail_v1.Gmail) {
   const res = await gmail.users.labels.list({ userId: "me" });

@@ -24,7 +24,6 @@ import {
   useGmail,
 } from "@/providers/GmailProvider";
 import { createLabelAction, updateLabels } from "@/utils/actions";
-import { PlusSmallIcon } from "@heroicons/react/24/outline";
 import { useModal, Modal } from "@/components/Modal";
 import { type Label } from "@prisma/client";
 import { postRequest } from "@/utils/api";
@@ -33,6 +32,7 @@ import {
   CreateLabelResponse,
 } from "@/app/api/google/labels/create/controller";
 import { UserLabelsResponse } from "@/app/api/user/labels/route";
+import { PlusIcon } from "lucide-react";
 
 const recommendedLabels = ["Newsletter", "Receipt", "Calendar"];
 
@@ -234,7 +234,7 @@ function LabelsSectionFormInner(props: {
                         <div className="relative flex w-full items-center justify-center">
                           {label}
                           <span className="absolute right-0 hidden group-hover:block">
-                            <PlusSmallIcon className="h-4 w-4 text-gray-500" />
+                            <PlusIcon className="h-4 w-4 text-gray-500" />
                           </span>
                         </div>
                       </Tag>
@@ -339,7 +339,7 @@ function AddLabelModal() {
 
   return (
     <>
-      <Button onClick={() => openModal()}>Add Label</Button>
+      <Button onClick={openModal}>Add Label</Button>
       <Modal isOpen={isModalOpen} hideModal={closeModal} title="Add Label">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-4">

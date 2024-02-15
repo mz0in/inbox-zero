@@ -12,21 +12,22 @@ export function findUnsubscribeLink(html?: string | null) {
       text.includes("unsubscribe") ||
       text.includes("email preferences") ||
       text.includes("email settings") ||
-      text.includes("email options")
+      text.includes("email options") ||
+      text.includes("notification preferences")
     ) {
       unsubscribeLink = $(element).attr("href");
-      console.debug(
-        `Found link with text '${text}' and a link: ${unsubscribeLink}`,
-      );
+      // console.debug(
+      //   `Found link with text '${text}' and a link: ${unsubscribeLink}`,
+      // );
       return false; // break the loop
     }
 
     const href = $(element).attr("href")?.toLowerCase() || "";
     if (href.includes("unsubcribe")) {
       unsubscribeLink = $(element).attr("href");
-      console.debug(
-        `Found link with href '${href}' and a link: ${unsubscribeLink}`,
-      );
+      // console.debug(
+      //   `Found link with href '${href}' and a link: ${unsubscribeLink}`,
+      // );
       return false; // break the loop
     }
   });
@@ -48,15 +49,11 @@ export function findUnsubscribeLink(html?: string | null) {
     const parent = $(textNode).parent();
     const link = parent.find("a").attr("href");
     if (link) {
-      console.debug(`Found text including 'unsubscribe' and a link: ${link}`);
+      // console.debug(`Found text including 'unsubscribe' and a link: ${link}`);
       unsubscribeLink = link;
       return false; // break the loop
     }
   });
 
   return unsubscribeLink;
-}
-
-export function getHeaderUnsubscribe(headers: { "List-Unsubscribe"?: string }) {
-  return headers["List-Unsubscribe"] || undefined;
 }

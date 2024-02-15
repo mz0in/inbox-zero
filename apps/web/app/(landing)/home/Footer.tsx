@@ -3,26 +3,34 @@ import Link from "next/link";
 const navigation = {
   main: [
     { name: "Newsletter Cleaner", href: "/newsletter-cleaner" },
+    { name: "Cold Email Blocker", href: "/block-cold-emails" },
     { name: "Email Analytics", href: "/email-analytics" },
     { name: "Email AI Automation", href: "/ai-automation" },
     { name: "New Sender Management", href: "/new-email-senders" },
     { name: "Open Source", href: "/github", target: "_blank" },
     { name: "OSS Friends", href: "/oss-friends" },
   ],
-  legal: [
-    { name: "Terms", href: "/terms" },
-    { name: "Privacy", href: "/privacy" },
-  ],
   support: [
     { name: "Pricing", href: "/#pricing" },
+    { name: "Contact", href: "mailto:elie@getinboxzero.com", target: "_blank" },
+    {
+      name: "Documentation",
+      href: "https://docs.getinboxzero.com",
+      target: "_blank",
+    },
     { name: "Feature Requests", href: "/feature-requests", target: "_blank" },
-    { name: "Roadmap", href: "/roadmap", target: "_blank" },
   ],
   company: [
+    { name: "Blog", href: "/blog" },
     { name: "Affiliates", href: "/affiliates", target: "_blank" },
     { name: "Twitter", href: "/twitter", target: "_blank" },
     { name: "GitHub", href: "/github", target: "_blank" },
     { name: "Discord", href: "/discord", target: "_blank" },
+  ],
+  legal: [
+    { name: "Terms", href: "/terms" },
+    { name: "Privacy", href: "/privacy" },
+    { name: "Sitemap", href: "/sitemap.xml" },
   ],
   social: [
     {
@@ -120,13 +128,14 @@ function FooterList(props: {
       <ul role="list" className="mt-6 space-y-4">
         {props.items.map((item) => (
           <li key={item.name}>
-            <a
+            <Link
               href={item.href}
               target={item.target}
+              prefetch={item.target !== "_blank"}
               className="text-sm leading-6 text-gray-600 hover:text-gray-900"
             >
               {item.name}
-            </a>
+            </Link>
           </li>
         ))}
       </ul>

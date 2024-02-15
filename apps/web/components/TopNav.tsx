@@ -1,10 +1,9 @@
 import { Fragment } from "react";
-import { Bars3Icon } from "@heroicons/react/24/outline";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { Menu, Transition } from "@headlessui/react";
 import { Button } from "@/components/Button";
+import { ChevronDownIcon, MenuIcon } from "lucide-react";
 // import { PromptBar } from "@/components/PromptBar";
 
 const userNavigation = [
@@ -25,7 +24,7 @@ export function TopNav(props: { setSidebarOpen: (open: boolean) => void }) {
         onClick={() => props.setSidebarOpen(true)}
       >
         <span className="sr-only">Open sidebar</span>
-        <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+        <MenuIcon className="h-6 w-6" aria-hidden="true" />
       </button>
 
       {/* Separator */}
@@ -63,20 +62,22 @@ function ProfileDropdown() {
       <Menu as="div" className="relative">
         <Menu.Button className="-m-1.5 flex items-center p-1.5">
           <span className="sr-only">Open user menu</span>
-          {!!session.user.image && (
+          {session.user.image ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               className="h-8 w-8 rounded-full bg-gray-50"
               src={session.user.image}
-              alt=""
+              alt="Profile"
             />
+          ) : (
+            <div className="h-8 w-8 rounded-full bg-blue-500" />
           )}
           <span className="hidden lg:flex lg:items-center">
             <span
               className="ml-4 text-sm font-semibold leading-6 text-gray-900"
               aria-hidden="true"
             >
-              {session.user.name}
+              {session.user.name || "Account"}
             </span>
             <ChevronDownIcon
               className="ml-2 h-5 w-5 text-gray-400"
@@ -106,7 +107,7 @@ function ProfileDropdown() {
                     href={item.href}
                     className={clsx(
                       active ? "bg-gray-50" : "",
-                      "block px-3 py-1 text-sm leading-6 text-gray-900"
+                      "block px-3 py-1 text-sm leading-6 text-gray-900",
                     )}
                     onClick={item.onClick}
                   >

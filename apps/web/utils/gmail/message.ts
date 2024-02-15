@@ -1,4 +1,4 @@
-import { gmail_v1 } from "googleapis";
+import { type gmail_v1 } from "googleapis";
 import { parseMessage } from "@/utils/mail";
 import { MessageWithPayload } from "@/utils/types";
 import { getBatch } from "@/utils/gmail/batch";
@@ -66,4 +66,20 @@ export async function hasPreviousEmailsFromSender(
   );
 
   return hasPreviousEmail;
+}
+
+export async function getMessages(
+  gmail: gmail_v1.Gmail,
+  options: {
+    query?: string;
+    maxResults?: number;
+  },
+) {
+  const messages = await gmail.users.messages.list({
+    userId: "me",
+    maxResults: options.maxResults,
+    q: options.query,
+  });
+
+  return messages.data;
 }

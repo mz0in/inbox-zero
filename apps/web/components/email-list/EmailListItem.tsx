@@ -7,13 +7,13 @@ import {
 } from "react";
 import clsx from "clsx";
 import { ActionButtons } from "@/components/ActionButtons";
-import { formatShortDate } from "@/utils/date";
 import { PlanBadge } from "@/components/PlanBadge";
 import { type Thread } from "@/components/email-list/types";
 import { PlanActions } from "@/components/email-list/PlanActions";
 import { extractNameFromEmail, participant } from "@/utils/email";
 import { CategoryBadge } from "@/components/CategoryBadge";
 import { Checkbox } from "@/components/Checkbox";
+import { EmailDate } from "@/components/email-list/EmailDate";
 
 export const EmailListItem = forwardRef(
   (
@@ -26,10 +26,9 @@ export const EmailListItem = forwardRef(
       onClick: MouseEventHandler<HTMLLIElement>;
       closePanel: () => void;
       onSelected: (id: string) => void;
-      onShowReply: () => void;
+      onReply: () => void;
       isPlanning: boolean;
       isCategorizing: boolean;
-      isArchiving: boolean;
       onPlanAiAction: (thread: Thread) => void;
       onAiCategorize: (thread: Thread) => void;
       onArchive: (thread: Thread) => void;
@@ -61,6 +60,8 @@ export const EmailListItem = forwardRef(
       [onSelected, props.thread.id],
     );
 
+    if (!lastMessage) return null;
+
     return (
       <li
         ref={ref}
@@ -87,10 +88,10 @@ export const EmailListItem = forwardRef(
                 className="flex items-center pl-1"
                 onClick={preventPropagation}
               >
-                <Checkbox checked={props.selected} onChange={onRowSelected} />
+                <Checkbox checked={!!props.selected} onChange={onRowSelected} />
               </div>
 
-              <div className="ml-4 w-40 min-w-0 overflow-hidden truncate text-gray-900">
+              <div className="ml-4 w-48 min-w-0 overflow-hidden truncate text-gray-900">
                 {extractNameFromEmail(
                   participant(
                     lastMessage.parsedMessage,
@@ -126,10 +127,9 @@ export const EmailListItem = forwardRef(
                 >
                   <ActionButtons
                     threadId={thread.id!}
-                    onReply={props.onShowReply}
+                    onReply={props.onReply}
                     isPlanning={props.isPlanning}
                     isCategorizing={props.isCategorizing}
-                    isArchiving={props.isArchiving}
                     onPlanAiAction={() => props.onPlanAiAction(thread)}
                     onAiCategorize={() => props.onAiCategorize(thread)}
                     onArchive={() => {
@@ -139,15 +139,15 @@ export const EmailListItem = forwardRef(
                     refetch={props.refetch}
                   />
                 </div>
-                <div className="flex-shrink-0 text-sm font-medium leading-5 text-gray-500">
-                  {formatShortDate(
-                    new Date(+(lastMessage?.internalDate || "")),
-                  )}
-                </div>
+                <EmailDate
+                  date={new Date(+(lastMessage?.internalDate || ""))}
+                />
               </div>
 
               <div className="ml-3 flex items-center whitespace-nowrap">
-                <CategoryBadge category={thread.category?.category} />
+                {thread.category?.category ? (
+                  <CategoryBadge category={thread.category.category} />
+                ) : null}
                 <div className="ml-3">
                   <PlanBadge plan={thread.plan} />
                 </div>

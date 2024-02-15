@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { Metadata } from "next";
 import {
   BlocksIcon,
   EyeIcon,
@@ -11,29 +13,32 @@ import { Testimonials } from "@/app/(landing)/home/Testimonials";
 import { Pricing } from "@/app/(app)/premium/Pricing";
 import { FAQs } from "@/app/(landing)/home/FAQs";
 import { CTA } from "@/app/(landing)/home/CTA";
-import { Footer } from "@/app/(landing)/home/Footer";
 import { FeaturesWithImage } from "@/app/(landing)/home/Features";
+import { BasicLayout } from "@/components/layouts/BasicLayout";
+
+export const metadata: Metadata = {
+  title: "New Email Senders | Inbox Zero",
+  description:
+    "Manage and block new senders in your inbox. Identify and control your new email connections with a single click.",
+  alternates: { canonical: "/new-email-senders" },
+};
 
 export default function NewEmailSenders() {
   return (
-    <div className="bg-white">
-      <Header />
-
-      <main className="isolate">
-        <Hero
-          title="Manage and Block New Senders in Your Inbox"
-          subtitle="Identify and control your new email connections with a single click."
-        />
-        {/* <LogoCloud /> */}
-        <Testimonials />
-        <FeaturesNewSenders />
+    <BasicLayout>
+      <Hero
+        title="Manage and Block New Senders in Your Inbox"
+        subtitle="Identify and control your new email connections with a single click."
+      />
+      {/* <LogoCloud /> */}
+      <Testimonials />
+      <FeaturesNewSenders />
+      <Suspense>
         <Pricing />
-        <FAQs />
-        <CTA />
-      </main>
-
-      <Footer />
-    </div>
+      </Suspense>
+      <FAQs />
+      <CTA />
+    </BasicLayout>
   );
 }
 
@@ -68,7 +73,7 @@ function FeaturesNewSenders() {
   return (
     <FeaturesWithImage
       imageSide="left"
-      title="Newsletter Management"
+      title="Newsletter Cleaner"
       subtitle="Manage new senders in your inbox"
       description="View a comprehensive list of recent new senders, making it easier to spot important contacts and opportunities, while also offering the ability to block unwanted communication effortlessly."
       image="/images/newsletters.png"

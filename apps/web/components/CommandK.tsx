@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import { PenLineIcon } from "lucide-react";
 import {
   CommandDialog,
   CommandEmpty,
@@ -11,11 +12,13 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { navigation } from "@/components/SideNav";
+import { useComposeModal } from "@/providers/ComposeModalProvider";
 
 export function CommandK() {
   const [open, setOpen] = React.useState(false);
 
   const router = useRouter();
+  const { onOpen } = useComposeModal();
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -47,6 +50,18 @@ export function CommandK() {
         <CommandInput placeholder="Type a command..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
+          <CommandGroup heading="Actions">
+            <CommandItem
+              onSelect={() => {
+                setOpen(false);
+                onOpen();
+              }}
+            >
+              <PenLineIcon className="mr-2 h-4 w-4" />
+              <span>Compose</span>
+              {/* <CommandShortcut>C</CommandShortcut> */}
+            </CommandItem>
+          </CommandGroup>
           <CommandGroup heading="Navigation">
             {navigation.map((option) => (
               <CommandItem

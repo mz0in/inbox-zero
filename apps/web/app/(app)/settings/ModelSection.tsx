@@ -83,8 +83,8 @@ function ModelSectionForm(props: {
         value: "gpt-3.5-turbo-1106",
       },
       {
-        label: "GPT-4",
-        value: "gpt-4-1106-preview",
+        label: "GPT-4 Turbo",
+        value: "gpt-4-turbo-preview",
       },
     ],
     [],

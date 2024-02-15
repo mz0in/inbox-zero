@@ -1,4 +1,4 @@
-import { gmail_v1 } from "googleapis";
+import { type gmail_v1 } from "googleapis";
 import { NextResponse } from "next/server";
 import { auth } from "@/app/api/auth/[...nextauth]/auth";
 import { getGmailClient } from "@/utils/gmail/client";
@@ -6,6 +6,7 @@ import { getGmailLabels } from "@/utils/label";
 import { withError } from "@/utils/middleware";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 30;
 
 // const labelsQuery = z.object({});
 // export type LabelsQuery = z.infer<typeof labelsQuery>;

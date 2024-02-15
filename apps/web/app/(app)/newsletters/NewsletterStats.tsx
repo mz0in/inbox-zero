@@ -38,6 +38,8 @@ import {
   ActionCell,
   HeaderButton,
 } from "@/app/(app)/newsletters/common";
+import NewsletterSummary from "@/app/(app)/newsletters/NewsletterSummary";
+import { useStatLoader } from "@/providers/StatLoaderProvider";
 
 type Newsletter = NewsletterStatsResponse["newsletters"][number];
 
@@ -88,13 +90,16 @@ export function NewsletterStats(props: {
     mutate,
   });
 
+  const { isLoading: isStatsLoading } = useStatLoader();
+
   return (
     <>
-      <Card className="p-0">
+      <NewsletterSummary />
+      <Card className="mt-4 p-0">
         <div className="items-center justify-between px-6 pt-6 md:flex">
           <SectionHeader
             title="Which newsletters and marketing emails do you get the most?"
-            description="A list of are your email subscriptions. Quickly unsubscribe or view the emails in more detail."
+            description="A list of all your email subscriptions. Quickly unsubscribe or view the emails in more detail."
           />
           <div className="ml-4 mt-3 flex justify-end space-x-2 md:mt-0">
             <div className="hidden md:block">
@@ -146,36 +151,46 @@ export function NewsletterStats(props: {
           </div>
         </div>
 
-        <LoadingContent
-          loading={!data && isLoading}
-          error={error}
-          loadingComponent={<Skeleton className="m-4 h-screen rounded" />}
-        >
-          {data && (
-            <NewsletterTable
-              sortColumn={sortColumn}
-              setSortColumn={setSortColumn}
-              tableRows={data.newsletters
-                .slice(0, expanded ? undefined : 50)
-                .map((item) => (
-                  <NewsletterRow
-                    key={item.name}
-                    item={item}
-                    setOpenedNewsletter={setOpenedNewsletter}
-                    gmailLabels={gmailLabels?.labels || []}
-                    mutate={mutate}
-                    selected={selectedRow?.name === item.name}
-                    onSelectRow={() => {
-                      setSelectedRow(item);
-                    }}
-                    hasUnsubscribeAccess={hasUnsubscribeAccess}
-                    refetchPremium={refetchPremium}
-                  />
-                ))}
-            />
-          )}
-          <div className="mt-2 px-6 pb-6">{extra}</div>
-        </LoadingContent>
+        {isStatsLoading && !isLoading && !data?.newsletters.length ? (
+          <div className="p-4">
+            <Skeleton className="h-screen rounded" />
+          </div>
+        ) : (
+          <LoadingContent
+            loading={!data && isLoading}
+            error={error}
+            loadingComponent={
+              <div className="p-4">
+                <Skeleton className="h-screen rounded" />
+              </div>
+            }
+          >
+            {data && (
+              <NewsletterTable
+                sortColumn={sortColumn}
+                setSortColumn={setSortColumn}
+                tableRows={data.newsletters
+                  .slice(0, expanded ? undefined : 50)
+                  .map((item) => (
+                    <NewsletterRow
+                      key={item.name}
+                      item={item}
+                      setOpenedNewsletter={setOpenedNewsletter}
+                      gmailLabels={gmailLabels?.labels || []}
+                      mutate={mutate}
+                      selected={selectedRow?.name === item.name}
+                      onSelectRow={() => {
+                        setSelectedRow(item);
+                      }}
+                      hasUnsubscribeAccess={hasUnsubscribeAccess}
+                      refetchPremium={refetchPremium}
+                    />
+                  ))}
+              />
+            )}
+            <div className="mt-2 px-6 pb-6">{extra}</div>
+          </LoadingContent>
+        )}
       </Card>
       <NewsletterModal
         newsletter={openedNewsletter}
